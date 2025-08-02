@@ -125,29 +125,6 @@
                 ],
                 "combinator": "and"
               }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 2
-                },
-                "conditions": [
-                  {
-                    "id": "c3e79376-f43e-48ff-8e52-c280d7b0db95",
-                    "leftValue": "",
-                    "rightValue": "",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
             }
           ]
         },
@@ -175,8 +152,8 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        624,
-        -208
+        688,
+        -160
       ],
       "id": "7ce3321b-741b-4a4b-95ae-3bcc059b5a71",
       "name": "Search files and folders",
@@ -191,7 +168,41 @@
     {
       "parameters": {
         "resource": "folder",
-        "name": "n8n-test-folder",
+        "operation": "deleteFolder",
+        "folderNoRootId": {
+          "__rl": true,
+          "value": "1VvBrqSxHhjOsFWiwpYyaOJmHHr3W-aBU",
+          "mode": "list",
+          "cachedResultName": "MyFolder",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1VvBrqSxHhjOsFWiwpYyaOJmHHr3W-aBU"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        832,
+        -64
+      ],
+      "id": "a2d77667-2daf-49ae-9c4a-1eaad4ada4b1",
+      "name": "Delete folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JQkrvLLspgk1bRWW",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "1j2G-egpM8eix4qDu3GGa6n2WHBX06WSz",
+          "mode": "list",
+          "cachedResultName": "10-Social-Science-Sample-Paper-2019-Set-1.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1j2G-egpM8eix4qDu3GGa6n2WHBX06WSz/view?usp=drivesdk"
+        },
         "driveId": {
           "__rl": true,
           "mode": "list",
@@ -199,24 +210,83 @@
         },
         "folderId": {
           "__rl": true,
+          "value": "1VvBrqSxHhjOsFWiwpYyaOJmHHr3W-aBU",
           "mode": "list",
-          "value": "root",
-          "cachedResultName": "/ (Root folder)"
-        },
+          "cachedResultName": "MyFolder",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1VvBrqSxHhjOsFWiwpYyaOJmHHr3W-aBU"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        736,
+        64
+      ],
+      "id": "b7ae5076-e731-4184-b058-828574940812",
+      "name": "Move file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JQkrvLLspgk1bRWW",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "queryString": "='{{ $json.id }}' in parents",
+        "filter": {},
         "options": {}
       },
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        672,
-        -64
+        608,
+        176
       ],
-      "id": "a2d77667-2daf-49ae-9c4a-1eaad4ada4b1",
-      "name": "Create folder",
+      "id": "e3e3a9f8-ee5b-4ee8-8ab3-642da336eda2",
+      "name": "Search files and folders1",
       "credentials": {
         "googleDriveOAuth2Api": {
           "id": "JQkrvLLspgk1bRWW",
           "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const files = items.map(item => `- ${item.json.name}`);\n\nif (files.length === 0) {\n  return [{ json: { reply: \"The folder is empty or does not exist.\" } }];\n}\n\nconst reply = `Files found:\\n${files.join('\\n')}`;\n\nreturn [{ json: { reply: reply } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        224
+      ],
+      "id": "76feab79-a11d-4d6a-b52e-7a411f90ee3f",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "from": "+14155238886",
+        "to": "={{ $('Webhook').item.json.body.From }}",
+        "toWhatsapp": true,
+        "message": "={{ $json.reply }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        -80
+      ],
+      "id": "26bfcb7d-b752-4203-a980-1f0b1b85cfda",
+      "name": "Send an SMS/MMS/WhatsApp message",
+      "credentials": {
+        "twilioApi": {
+          "id": "rWK2zimXXpfHFg1v",
+          "name": "Twilio account"
         }
       }
     }
@@ -256,7 +326,76 @@
         ],
         [
           {
-            "node": "Create folder",
+            "node": "Delete folder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Move file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Search files and folders1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move file": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete folder": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
             "type": "main",
             "index": 0
           }
@@ -264,7 +403,7 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1"
   },
